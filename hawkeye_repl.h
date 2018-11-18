@@ -10,18 +10,18 @@
 class HawkeyeReplPolicy : public ReplPolicy {
 
 	private:
-		uint64_t* array;
+		uint64_t* rripArray;
 		uint32_t numLines; // number of cache lines
 		bool predVal; // predval used by the hawkeye predictor
 		bool currentAcess;
 
 	public:
 		explicit HawkeyeReplPolicy(uint32_t _numLines) :numLines(_numLines) {
-			array = gm_calloc<uint64_t>(numLines);
+			rripArray = gm_calloc<uint64_t>(numLines);
 		}
 
 		~HawkeyeReplPolicy() {
-			gm_free(array);
+			gm_free(rripArray);
 		}
 
 		void update(uint32_t id, const MemReq* req) {
@@ -39,7 +39,7 @@ class HawkeyeReplPolicy : public ReplPolicy {
 		}
 
 		void replaced(uint32_t id) {
-			/* called when there is a miss*/
+			/* called when there is a miss and a cache block replaced */
 
 		}
 
@@ -54,7 +54,24 @@ class HawkeyeReplPolicy : public ReplPolicy {
 
 		inline uint64_t findCand(C cands) {
 			/* the replacement policy */
-			
+			for (auto ci = cands.begin(); ci != cands.end(); ci.inc()) {
+				if (rripArray[*ci] == 7) {
+					/* found the best candidate */
+					return *ci;
+				}
+			}
+			/* if could not find the best candidate, find one with highest rrip
+			value i.e oldest cache-friendly line */
+			uint64_t max = rripArray[*cands.begin()];
+			for (auto ci = cands.begin(); ci != cands.end(); ci.end()) {
+				max = (rripArray[*ci] > max)? rripArray[*ci]:max;
+			}
+
+			/* detrain its load instruction if the evicted line is present in the
+			sampler*/
+			// TODO: implement the above line
+
+			return max;
 		}
 
 		bool hawkeyePredictor() {
