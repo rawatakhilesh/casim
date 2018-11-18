@@ -9,10 +9,14 @@
 // Hawkeye by Jain et al. 2016
 class HawkeyeReplPolicy : public ReplPolicy {
 	protected:
+		// TODO: Define cacheCapacity
 		uint64_t* rripArray;
 		uint32_t numLines; // number of cache lines
 		bool predVal; // predval used by the hawkeye predictor
 		bool currentAcess;
+		vector< MemReq* > accessSequence;
+		vector< uint32_t > occupancyVector;
+		/* to be used by the OPTGen to keep track of access sequence */
 
 	public:
 		explicit HawkeyeReplPolicy(uint32_t _numLines) :numLines(_numLines) {
@@ -26,6 +30,10 @@ class HawkeyeReplPolicy : public ReplPolicy {
 		void update(uint32_t id, const MemReq* req) {
 			/* called on cache hit and on cache miss after rank() and replaced()
 			are called */
+
+			/* OPTgen should be called on each cache access */
+			OPTGen(const MemReq* req);
+
 			predVal = hawkeyePredictor();
 			/* Hawkeye predictor generates a binary prediction to indicate whether
 			the line is cache-friendly or cache-averse. */
@@ -76,7 +84,50 @@ class HawkeyeReplPolicy : public ReplPolicy {
 			return max;
 		}
 
+		bool OPTGen(const MemReq* req) {
+			bool roofHit = true;
+			uint32_t found = -1;
+
+			/* what OPTGen thinks of the recent cache access */
+			bool OPTGenHit = false;
+
+			/* set the most recent entry of the occupancyVector to zero */
+			occupancyVector.push_back(0);
+
+			/* lookup last access to this mem */
+			for (uint32_t index = 0; index < accessSequence.size()-1; index ++) {
+				if(accessSequence[index] == req) {
+					last_access = index;
+					found = 1;
+					break;
+				}
+			}
+
+			/* if found, check if every element corresponding to the usage interval is less
+			than the cache capacity */
+			if (found > 0) {
+				for (uint32_t i = last_access; i < accessSequence.size()-1; i++) {
+					if (occupancyVector[i] == cacheCapacity) {roofHit = true;}
+				}
+			}
+
+			/* if all the elements corresponding to the usage interval are less
+			than the cache capacity then OPT would have placed 'X' in the cache,
+			so the elements in usage interval in occupancyVector are incremented */
+
+			if (!roofHit) {
+				for (uint32_t i = last_access; i < accessSequence.size()-1; i++) {
+					occupancyVector[i]++;
+				}
+				OPTGenHit = true;
+			}
+
+		return OPTGenHit;
+
+		}
+
 		bool hawkeyePredictor() {
+			/* THE HAWKEYE PREDICTOR */
 			// TODO: implementation
 			/*
 				Cache-friendly = 1
@@ -113,7 +164,7 @@ class HawkeyeReplPolicy : public ReplPolicy {
 			/* age all OTHER cache lines: if (RRIP < 6) RRIP ++ */
 			for (uint32_t i = 0; i < numLines; i++) {
 				if (_id!=i) {
-					if (rripArray[i] < 6) {rripArray[i]++;}	
+					if (rripArray[i] < 6) {rripArray[i]++;}
 				}
 			}
 		}
