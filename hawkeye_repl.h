@@ -55,7 +55,7 @@ class HawkeyeReplPolicy : public ReplPolicy {
 
 	private:
 		inline uint64_t findCand(C cands) {
-			/* the replacement policy */
+			/* THE REPLACEMENT POLICY */
 			for (auto ci = cands.begin(); ci != cands.end(); ci.inc()) {
 				if (rripArray[*ci] == 7) {
 					/* found the best candidate */
@@ -110,8 +110,12 @@ class HawkeyeReplPolicy : public ReplPolicy {
 		}
 
 		inline void ageAllCacheLines(uint32_t _id) {
-			/* age all cache lines: if (RRIP < 6) RRIP ++ */
-			// TODO: implementation
+			/* age all OTHER cache lines: if (RRIP < 6) RRIP ++ */
+			for (uint32_t i = 0; i < numLines; i++) {
+				if (_id!=i) {
+					if (rripArray[i] < 6) {rripArray[i]++;}	
+				}
+			}
 		}
 
 		//template <typename C> uint64_t {}
