@@ -35,7 +35,7 @@ class HawkeyeReplPolicy : public ReplPolicy {
 			/* OPTgen should be called on each cache access */
 			OPTGen(const MemReq* req);
 
-			predVal = hawkeyePredictor();
+			predVal = hawkeyePredictor(const MemReq* req);
 			/* Hawkeye predictor generates a binary prediction to indicate whether
 			the line is cache-friendly or cache-averse. */
 
