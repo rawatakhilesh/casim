@@ -16,6 +16,7 @@ class HawkeyeReplPolicy : public ReplPolicy {
 		bool currentAcess;
 		vector< MemReq* > accessSequence;
 		vector< uint32_t > occupancyVector;
+	        const uint32_t HashedPC = 13; //13 bits hashed PC
 		/* to be used by the OPTGen to keep track of access sequence */
 
 	public:
@@ -126,14 +127,27 @@ class HawkeyeReplPolicy : public ReplPolicy {
 
 		}
 
-		bool hawkeyePredictor() {
+		bool hawkeyePredictor(const MemReq* req) {
 			/* THE HAWKEYE PREDICTOR */
-			// TODO: implementation
+			// TODO: implementation ; /*value of opt gen at that PC*
+			if(OPTGen(req)){
+			    if(/*value of opt gen at that PC*/ < 7){
+				 /*value of opt gen at that PC*/++;
+			    } else {
+				if(/*value of opt gen at that PC*/ > 0)  {
+				    /*value of opt gen at that PC*/ --;
+			    }
+			}
 			/*
 				Cache-friendly = 1
 				Cache-averse = 0
 			*/
-			return predVal;
+			if (/*value of opt gen at that PC*/ > 4) { //Higher order bit for the 3 bit counter
+		            return true; //Cache-friendly
+		          } else {
+		            return false; //Cache-averse
+		          }
+			//return predVal;
 		}
 
 		void associateRRIP(uint32_t _id, bool _predVal, bool _currentAccess) {
