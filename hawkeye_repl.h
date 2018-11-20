@@ -1,7 +1,9 @@
 #ifndef HAWKEYE_REPL_H_
 #define HAWKEYE_REPL_H_
+//using namespace std;
 
 #include <vector>
+#include <array>
 
 #include "repl_policies.h"
 
@@ -9,19 +11,33 @@
 // Hawkeye by Jain et al. 2016
 class HawkeyeReplPolicy : public ReplPolicy {
 	protected:
-		// TODO: Define cacheCapacity
+		const uint32_t MAX_PREDICT_ENTRIES = 0b1111111111111;
+		/* The hawkeye predictor hold 8k entries */
+		array < uint32_t, MAX_PREDICT_ENTRIES > hawkPredictor;
+
 		uint64_t* rripArray;
 		uint32_t numLines; // number of cache lines
 		bool predVal; // predval used by the hawkeye predictor
 		bool currentAcess;
 		vector< MemReq* > accessSequence;
 		vector< uint32_t > occupancyVector;
-	        const uint32_t HashedPC = 13; //13 bits hashed PC
 		/* to be used by the OPTGen to keep track of access sequence */
+
+		uint32_t cacheAssoc; // cache associativity
+
+		/* for set-associative caches, OPTgen maintians one occupancyVector for
+		each cache set such that the maximum capacity of any occupancyVector entry
+		never exceeds the cache associativity.*/
+
+		const uint32_t hashedPC = 1 << 12; //13 bits hashed PC
+		/* may be want to chage value later? */
 
 	public:
 		explicit HawkeyeReplPolicy(uint32_t _numLines) :numLines(_numLines) {
 			rripArray = gm_calloc<uint64_t>(numLines);
+
+			/* initialize hawkPredictor array to 0b000 */
+			hawkPredictor.fill(0b000);
 		}
 
 		~HawkeyeReplPolicy() {
@@ -33,9 +49,9 @@ class HawkeyeReplPolicy : public ReplPolicy {
 			are called */
 
 			/* OPTgen should be called on each cache access */
-			OPTGen(const MemReq* req);
+			bool OPTGenHit = OPTGen(const MemReq* req);
 
-			predVal = hawkeyePredictor(const MemReq* req);
+			predVal = hawkeyePredictor(const MemReq* req, OPTGenHit);
 			/* Hawkeye predictor generates a binary prediction to indicate whether
 			the line is cache-friendly or cache-averse. */
 
@@ -108,7 +124,7 @@ class HawkeyeReplPolicy : public ReplPolicy {
 			than the cache capacity */
 			if (found > 0) {
 				for (uint32_t i = last_access; i < accessSequence.size()-1; i++) {
-					if (occupancyVector[i] == cacheCapacity) {roofHit = true;}
+					if (occupancyVector[i] == cacheAssoc) {roofHit = true;}
 				}
 			}
 
@@ -127,27 +143,29 @@ class HawkeyeReplPolicy : public ReplPolicy {
 
 		}
 
-		bool hawkeyePredictor(const MemReq* req) {
+		bool hawkeyePredictor(const MemReq* req, bool _OPTGenHit) {
 			/* THE HAWKEYE PREDICTOR */
 			// TODO: implementation ; /*value of opt gen at that PC*
-			if(OPTGen(req)){
-			    if(/*value of opt gen at that PC*/ < 7){
-				 /*value of opt gen at that PC*/++;
-			    } else {
-				if(/*value of opt gen at that PC*/ > 0)  {
-				    /*value of opt gen at that PC*/ --;
-			    }
+			if (_OPTGenHit) {
+				/* pc that LAST accessed X is trained positively*/
+				hawkPredictor[/*pc LAST accessed*/]++;
+			} else {
+				/* train negatively */
+				hawkPredictor[/*pc that LAST accessed*/]--;
 			}
+
 			/*
-				Cache-friendly = 1
-				Cache-averse = 0
+			Cache-friendly = 1
+			Cache-averse = 0
 			*/
-			if (/*value of opt gen at that PC*/ > 4) { //Higher order bit for the 3 bit counter
-		            return true; //Cache-friendly
-		          } else {
-		            return false; //Cache-averse
-		          }
-			//return predVal;
+			if (hawkPredictor[hashedPC] >> 2 == 1) {
+				// indexed by the current load pc
+				// Higher order bit for the 3 bit counter
+				return true; //Cache-friendly
+			} else {
+				return false; //Cache-averse
+			}
+			// return predVal;
 		}
 
 		void associateRRIP(uint32_t _id, bool _predVal, bool _currentAccess) {
