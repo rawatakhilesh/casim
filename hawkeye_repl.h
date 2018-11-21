@@ -12,17 +12,21 @@
 class HawkeyeReplPolicy : public ReplPolicy {
 	protected:
 		const uint32_t MAX_PREDICT_ENTRIES = 0b1111111111111;
-		/* The hawkeye predictor hold 8k entries */
+		/* The hawkeye predictor hold 8k entries with 3 bit counters
+		for training. */
 		array < uint32_t, MAX_PREDICT_ENTRIES > hawkPredictor;
+		array < uint64_t, MAX_PREDICT_ENTRIES > pcAccesSequence
+		/* a pc access sequence array which records which pc accessed which x
+		 pc -> lineAddr */
 
 		uint64_t* rripArray;
 		uint32_t numLines; // number of cache lines
+		uint64_t lineAddr; // address of the line
 		bool predVal; // predval used by the hawkeye predictor
 		bool currentAcess;
 		vector< MemReq* > accessSequence;
 		vector< uint32_t > occupancyVector;
 		/* to be used by the OPTGen to keep track of access sequence */
-
 		uint32_t cacheAssoc; // cache associativity
 
 		/* for set-associative caches, OPTgen maintians one occupancyVector for
@@ -33,7 +37,7 @@ class HawkeyeReplPolicy : public ReplPolicy {
 		/* may be want to chage value later? */
 
 	public:
-		explicit HawkeyeReplPolicy(uint32_t _numLines) :numLines(_numLines) {
+		explicit HawkeyeReplPolicy(uint32_t _numLines) :numLines(_numLines) :lineAddr(0) {
 			rripArray = gm_calloc<uint64_t>(numLines);
 
 			/* initialize hawkPredictor array to 0b000 */
@@ -50,6 +54,8 @@ class HawkeyeReplPolicy : public ReplPolicy {
 
 			/* OPTgen should be called on each cache access */
 			bool OPTGenHit = OPTGen(const MemReq* req);
+
+			pcAccesSequence[/* current pc */] = req.lineAddr;
 
 			predVal = hawkeyePredictor(const MemReq* req, OPTGenHit);
 			/* Hawkeye predictor generates a binary prediction to indicate whether
@@ -148,6 +154,7 @@ class HawkeyeReplPolicy : public ReplPolicy {
 			// req.lineaddr might be useful
 			// TODO: implementation ; /*value of opt gen at that PC*
 			if (_OPTGenHit) {
+				/* find the pc from pcAccesSequence array which accessed X last */
 				/* pc that LAST accessed X is trained positively*/
 				hawkPredictor[/*pc LAST accessed*/]++;
 			} else {
