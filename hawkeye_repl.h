@@ -145,6 +145,7 @@ class HawkeyeReplPolicy : public ReplPolicy {
 
 		bool hawkeyePredictor(const MemReq* req, bool _OPTGenHit) {
 			/* THE HAWKEYE PREDICTOR */
+			// req.lineaddr might be useful
 			// TODO: implementation ; /*value of opt gen at that PC*
 			if (_OPTGenHit) {
 				/* pc that LAST accessed X is trained positively*/
