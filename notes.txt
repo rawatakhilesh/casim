@@ -1,0 +1,6 @@
+PIN Instrumentation Arguements:
+
+https://software.intel.com/sites/landingpage/pintool/docs/81205/Pin/html/group__INST__ARGS.html#gga089c27ca15e9ff139dd3a3f8a6f8451da623ad95758bce14fcb9427beef53736a
+
+
+https://software.intel.com/sites/landingpage/pintool/docs/81205/Pin/html/group__INS__BASIC__API__GEN__IA32.html#ga6b685dec56c6a045f8cc3c03f52d054a
