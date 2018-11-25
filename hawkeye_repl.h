@@ -153,20 +153,21 @@ class HawkeyeReplPolicy : public ReplPolicy {
 			/* THE HAWKEYE PREDICTOR */
 			// req.lineaddr might be useful
 			// TODO: implementation ; /*value of opt gen at that PC*
+			Address accessed = req->lineaddr;
 			if (_OPTGenHit) {
 				/* find the pc from pcAccesSequence array which accessed X last */
 				/* pc that LAST accessed X is trained positively*/
-				hawkPredictor[/*pc LAST accessed*/]++;
+				hawkPredictor[accessed]++;
 			} else {
 				/* train negatively */
-				hawkPredictor[/*pc that LAST accessed*/]--;
+				hawkPredictor[accessed]--;
 			}
 
 			/*
 			Cache-friendly = 1
 			Cache-averse = 0
 			*/
-			if (hawkPredictor[hashedPC] >> 2 == 1) {
+			if (hawkPredictor[accessed] >> 2 == 1) {
 				// indexed by the current load pc
 				// Higher order bit for the 3 bit counter
 				return true; //Cache-friendly
