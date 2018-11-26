@@ -10,12 +10,14 @@
 
 #include "repl_policies.h"
 
+const uint32_t MAX_PREDICT_ENTRIES = 0b1111111111111;
+const uint32_t MAX_WAYS = 16;
 
 // Hawkeye by Jain et al. 2016
 // Fall'18 CSCE 614 Term Project
 class HawkeyeReplPolicy : public ReplPolicy {
 	protected:
-		static const uint32_t MAX_PREDICT_ENTRIES = 0b1111111111111;
+		
 		/* The hawkeye predictor hold 8k entries with 3 bit counters
 		for training. */
 		array < uint32_t, MAX_PREDICT_ENTRIES > hawkPredictor;
@@ -30,12 +32,12 @@ class HawkeyeReplPolicy : public ReplPolicy {
 		uint64_t lineAddr; // address of the line
 		bool predVal; // predval used by the hawkeye predictor
 		bool currentAccess;
-		vector< Address > accessSequence;
-		vector< uint32_t > occupancyVector;
+		array < Address, 8*MAX_WAYS > accessSequence;
+		array < uint32_t, 8*MAX_WAYS > occupancyVector;
 		/* to be used by the OPTGen to keep track of access sequence */
-		uint32_t cacheAssoc; // cache associativity
+		uint32_t cacheAssoc = MAX_WAYS; // cache associativity
 
-		/* for set-associative caches, OPTgen maintians one occupancyVector for
+		/* for set-associative caches, OPTgen maintains one occupancyVector for
 		each cache set such that the maximum capacity of any occupancyVector entry
 		never exceeds the cache associativity.*/
 
@@ -46,7 +48,7 @@ class HawkeyeReplPolicy : public ReplPolicy {
 		/* there is definitely a better way to do it. I am being lazy here.*/
 
 	public:
-		explicit HawkeyeReplPolicy(uint32_t _numLines) :numLines(_numLines), lineAddr(0) {
+		explicit HawkeyeReplPolicy(uint32_t _numLines, uint32_t _cacheAssoc) :numLines(_numLines), lineAddr(0), cacheAssoc(_cacheAssoc) {
 			rripArray = gm_calloc<uint64_t>(numLines);
 
 			/* initialize hawkPredictor array to 0b000 */
@@ -95,11 +97,11 @@ class HawkeyeReplPolicy : public ReplPolicy {
 			repCheck = 1;
 		}
 
-		template <typename C> inline uint32_t rank(const MemReq* req, C cands) {
+		template <typename C> uint32_t rank(const MemReq* req, C cands) {
 			/* function called by cache for best candidate to be replaced */
 
 			uint32_t bestCand = -1;
-			bestCand = findCand(C cands);
+			bestCand = findCand(cands);
 			/* best candidate for replacement found */
 			return bestCand;
 		}
@@ -133,7 +135,7 @@ class HawkeyeReplPolicy : public ReplPolicy {
 		bool OPTGen(const MemReq* req) {
 			bool roofHit = true;
 			uint32_t found = -1;
-
+			uint32_t last_access;
 			/* what OPTGen thinks of the recent cache access */
 			bool OPTGenHit = false;
 
@@ -174,12 +176,14 @@ class HawkeyeReplPolicy : public ReplPolicy {
 		ADDRINT lastPCAccessed(const MemReq* req) {
 			/* should only be called when there is a cache hit else hell may break loose.
 			Looks up the last pc that accessed this line addr and return it */
-			for (auto pi = pcAccesSequence.begin(); pi!=pcAccessSequence.end(); pi++){
+			for (auto pi = pcAccessSequence.begin(); pi!=pcAccessSequence.end(); pi++){
 				if (pi->second == req->lineAddr) {// line addr is the second element
 					return pi->first;
 					// if match, return the pc i.e. the first element
 				}
 			}
+			// should not reach here
+			return false;
 		}
 
 		bool hawkeyePredictor(const MemReq* req, bool _OPTGenHit) {
