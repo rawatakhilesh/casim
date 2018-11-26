@@ -1,0 +1,307 @@
+-DPIN_PATH="/home/comparch/Desktop/casim/tools/pin-2.14-71313-gcc.4.4.7-linux/intel64/bin/pinbin" -DZSIM_PATH="/home/comparch/Desktop/casim/zsim/build/opt/libzsim.so" -DMT_SAFE_LOG -I/home/comparch/Desktop/casim/tools/pin-2.14-71313-gcc.4.4.7-linux/extras/xed-intel64/include -I/home/comparch/Desktop/casim/tools/pin-2.14-71313-gcc.4.4.7-linux/source/include/pin -I/home/comparch/Desktop/casim/tools/pin-2.14-71313-gcc.4.4.7-linux/source/include/pin/gen -I/home/comparch/Desktop/casim/tools/pin-2.14-71313-gcc.4.4.7-linux/extras/components/include -I/home/comparch/Desktop/casim/tools/local/include -Ibuild/opt build/opt/timing_event.cpp
+g++ -o build/opt/timing_core.os -c -fPIC -march=core2 -g -O3 -funroll-loops -g -std=c++0x -Wall -Wno-unknown-pragmas -fomit-frame-pointer -fno-stack-protector -MMD -DBIGARRAY_MULTIPLIER=1 -DUSING_XED -DTARGET_IA32E -DHOST_IA32E -fPIC -DTARGET_LINUX -Werror -DPIN_PATH="/home/comparch/Desktop/casim/tools/pin-2.14-71313-gcc.4.4.7-linux/intel64/bin/pinbin" -DZSIM_PATH="/home/comparch/Desktop/casim/zsim/build/opt/libzsim.so" -DMT_SAFE_LOG -I/home/comparch/Desktop/casim/tools/pin-2.14-71313-gcc.4.4.7-linux/extras/xed-intel64/include -I/home/comparch/Desktop/casim/tools/pin-2.14-71313-gcc.4.4.7-linux/source/include/pin -I/home/comparch/Desktop/casim/tools/pin-2.14-71313-gcc.4.4.7-linux/source/include/pin/gen -I/home/comparch/Desktop/casim/tools/pin-2.14-71313-gcc.4.4.7-linux/extras/components/include -I/home/comparch/Desktop/casim/tools/local/include -Ibuild/opt build/opt/timing_core.cpp
+In file included from build/opt/init.cpp:78:0:
+build/opt/hawkeye_repl.h:18:40: error: invalid use of non-static data member ‘HawkeyeReplPolicy::MAX_PREDICT_ENTRIES’
+   const uint32_t MAX_PREDICT_ENTRIES = 0b1111111111111;
+                                        ^
+build/opt/hawkeye_repl.h:21:21: error: from this location
+   array < uint32_t, MAX_PREDICT_ENTRIES > hawkPredictor;
+                     ^
+build/opt/hawkeye_repl.h:18:40: error: invalid use of non-static data member ‘HawkeyeReplPolicy::MAX_PREDICT_ENTRIES’
+   const uint32_t MAX_PREDICT_ENTRIES = 0b1111111111111;
+                                        ^
+build/opt/hawkeye_repl.h:21:21: error: from this location
+   array < uint32_t, MAX_PREDICT_ENTRIES > hawkPredictor;
+                     ^
+build/opt/hawkeye_repl.h:18:40: error: invalid use of non-static data member ‘HawkeyeReplPolicy::MAX_PREDICT_ENTRIES’
+   const uint32_t MAX_PREDICT_ENTRIES = 0b1111111111111;
+                                        ^
+build/opt/hawkeye_repl.h:21:21: error: from this location
+   array < uint32_t, MAX_PREDICT_ENTRIES > hawkPredictor;
+                     ^
+build/opt/hawkeye_repl.h:21:41: error: template argument 2 is invalid
+   array < uint32_t, MAX_PREDICT_ENTRIES > hawkPredictor;
+                                         ^
+build/opt/hawkeye_repl.h:45:3: error: ‘unit32_t’ does not name a type
+   unit32_t repCheck = 0; // replaced check
+   ^
+build/opt/hawkeye_repl.h:110:28: error: ‘C’ has not been declared
+   inline uint64_t findCand(C cands) {
+                            ^
+build/opt/hawkeye_repl.h: In constructor ‘HawkeyeReplPolicy::HawkeyeReplPolicy(uint32_t)’:
+build/opt/hawkeye_repl.h:49:71: error: expected ‘{’ before ‘:’ token
+   explicit HawkeyeReplPolicy(uint32_t _numLines) :numLines(_numLines) :lineAddr(0) {
+                                                                       ^
+build/opt/hawkeye_repl.h: In member function ‘virtual void HawkeyeReplPolicy::update(uint32_t, const MemReq*)’:
+build/opt/hawkeye_repl.h:65:28: error: expected primary-expression before ‘const’
+    bool OPTGenHit = OPTGen(const MemReq* req);
+                            ^
+build/opt/hawkeye_repl.h:68:33: error: request for member ‘lineAddr’ in ‘req’, which is of pointer type ‘const MemReq*’ (maybe you meant to use ‘->’ ?)
+    accessSequence.push_back(req.lineAddr);
+                                 ^
+build/opt/hawkeye_repl.h:72:25: error: request for member ‘insAddr’ in ‘req’, which is of pointer type ‘const MemReq*’ (maybe you meant to use ‘->’ ?)
+    pcAccessSequence[req.insAddr] = req.lineAddr;
+                         ^
+build/opt/hawkeye_repl.h:72:40: error: request for member ‘lineAddr’ in ‘req’, which is of pointer type ‘const MemReq*’ (maybe you meant to use ‘->’ ?)
+    pcAccessSequence[req.insAddr] = req.lineAddr;
+                                        ^
+build/opt/hawkeye_repl.h:74:31: error: expected primary-expression before ‘const’
+    predVal = hawkeyePredictor(const MemReq* req, OPTGenHit);
+                               ^
+build/opt/hawkeye_repl.h:78:7: error: ‘repCheck’ was not declared in this scope
+    if(repCheck == 0) {
+       ^
+build/opt/hawkeye_repl.h: In member function ‘virtual void HawkeyeReplPolicy::replaced(uint32_t)’:
+build/opt/hawkeye_repl.h:95:4: error: ‘repCheck’ was not declared in this scope
+    repCheck = 1;
+    ^
+build/opt/hawkeye_repl.h: In member function ‘uint32_t HawkeyeReplPolicy::rank(const MemReq*, C)’:
+build/opt/hawkeye_repl.h:102:26: error: expected primary-expression before ‘cands’
+    bestCand = findCand(C cands);
+                          ^
+build/opt/hawkeye_repl.h: In member function ‘uint64_t HawkeyeReplPolicy::findCand(int)’:
+build/opt/hawkeye_repl.h:112:25: error: request for member ‘begin’ in ‘cands’, which is of non-class type ‘int’
+    for (auto ci = cands.begin(); ci != cands.end(); ci.inc()) {
+                         ^
+build/opt/hawkeye_repl.h:112:46: error: request for member ‘end’ in ‘cands’, which is of non-class type ‘int’
+    for (auto ci = cands.begin(); ci != cands.end(); ci.inc()) {
+                                              ^
+build/opt/hawkeye_repl.h:120:36: error: request for member ‘begin’ in ‘cands’, which is of non-class type ‘int’
+    uint64_t max = rripArray[*cands.begin()];
+                                    ^
+build/opt/hawkeye_repl.h:121:25: error: request for member ‘begin’ in ‘cands’, which is of non-class type ‘int’
+    for (auto ci = cands.begin(); ci != cands.end(); ci.end()) {
+                         ^
+build/opt/hawkeye_repl.h:121:46: error: request for member ‘end’ in ‘cands’, which is of non-class type ‘int’
+    for (auto ci = cands.begin(); ci != cands.end(); ci.end()) {
+                                              ^
+build/opt/hawkeye_repl.h: In member function ‘bool HawkeyeReplPolicy::OPTGen(const MemReq*)’:
+build/opt/hawkeye_repl.h:144:37: error: request for member ‘lineAddr’ in ‘req’, which is of pointer type ‘const MemReq*’ (maybe you meant to use ‘->’ ?)
+     if(accessSequence[index] == req.lineAddr) {
+                                     ^
+build/opt/hawkeye_repl.h:145:6: error: ‘last_access’ was not declared in this scope
+      last_access = index;
+      ^
+build/opt/hawkeye_repl.h:154:23: error: ‘last_access’ was not declared in this scope
+     for (uint32_t i = last_access; i < accessSequence.size(); i++) {
+                       ^
+build/opt/hawkeye_repl.h:164:23: error: ‘last_access’ was not declared in this scope
+     for (uint32_t i = last_access; i < accessSequence.size(); i++) {
+                       ^
+build/opt/hawkeye_repl.h: In member function ‘LEVEL_BASE::ADDRINT HawkeyeReplPolicy::lastPCAccessed(const MemReq*)’:
+build/opt/hawkeye_repl.h:177:19: error: ‘pcAccesSequence’ was not declared in this scope
+    for (auto pi = pcAccesSequence.begin(); pi!=pcAccessSequence.end(); pi++){
+                   ^
+build/opt/hawkeye_repl.h:178:27: error: request for member ‘lineAddr’ in ‘req’, which is of pointer type ‘const MemReq*’ (maybe you meant to use ‘->’ ?)
+     if (pi->second == req.lineAddr) {// line addr is the second element
+                           ^
+build/opt/hawkeye_repl.h: In member function ‘bool HawkeyeReplPolicy::hawkeyePredictor(const MemReq*, bool)’:
+build/opt/hawkeye_repl.h:195:21: error: invalid types ‘int[LEVEL_BASE::ADDRINT {aka long unsigned int}]’ for array subscript
+     hawkPredictor[pc]++;
+                     ^
+build/opt/hawkeye_repl.h:198:21: error: invalid types ‘int[LEVEL_BASE::ADDRINT {aka long unsigned int}]’ for array subscript
+     hawkPredictor[pc]--;
+                     ^
+build/opt/hawkeye_repl.h:205:26: error: request for member ‘insAddr’ in ‘req’, which is of pointer type ‘const MemReq*’ (maybe you meant to use ‘->’ ?)
+    if (hawkPredictor[req.insAddr] >> 2 == 1) {
+                          ^
+build/opt/init.cpp: In function ‘BaseCache* BuildCacheBank(Config&, const string&, g_string&, uint32_t, bool, uint32_t)’:
+build/opt/init.cpp:180:50: error: no matching function for call to ‘HawkeyeReplPolicy::HawkeyeReplPolicy(uint32_t&, uint32_t&)’
+         rp = new HawkeyeReplPolicy(numLines, ways);
+                                                  ^
+build/opt/init.cpp:180:50: note: candidates are:
+In file included from build/opt/init.cpp:78:0:
+build/opt/hawkeye_repl.h:49:12: note: HawkeyeReplPolicy::HawkeyeReplPolicy(uint32_t)
+   explicit HawkeyeReplPolicy(uint32_t _numLines) :numLines(_numLines) :lineAddr(0) {
+            ^
+build/opt/hawkeye_repl.h:49:12: note:   candidate expects 1 argument, 2 provided
+build/opt/hawkeye_repl.h:16:7: note: HawkeyeReplPolicy::HawkeyeReplPolicy(const HawkeyeReplPolicy&)
+ class HawkeyeReplPolicy : public ReplPolicy {
+       ^
+build/opt/hawkeye_repl.h:16:7: note:   candidate expects 1 argument, 2 provided
+build/opt/timing_core.cpp: In member function ‘void TimingCore::loadAndRecord(Address)’:
+build/opt/timing_core.cpp:82:40: error: no matching function for call to ‘FilterCache::load(Address&, uint64_t&)’
+     curCycle = l1d->load(addr, curCycle);
+                                        ^
+build/opt/timing_core.cpp:82:40: note: candidate is:
+In file included from build/opt/timing_core.cpp:27:0:
+build/opt/filter_cache.h:102:25: note: uint64_t FilterCache::load(Address, uint64_t, LEVEL_CORE::INS)
+         inline uint64_t load(Address vAddr, uint64_t curCycle, INS ins_copy) {
+                         ^
+build/opt/filter_cache.h:102:25: note:   candidate expects 3 arguments, 2 provided
+build/opt/timing_core.cpp: In member function ‘void TimingCore::storeAndRecord(Address)’:
+build/opt/timing_core.cpp:88:41: error: no matching function for call to ‘FilterCache::store(Address&, uint64_t&)’
+     curCycle = l1d->store(addr, curCycle);
+                                         ^
+build/opt/timing_core.cpp:88:41: note: candidate is:
+In file included from build/opt/timing_core.cpp:27:0:
+build/opt/filter_cache.h:114:25: note: uint64_t FilterCache::store(Address, uint64_t, LEVEL_CORE::INS)
+         inline uint64_t store(Address vAddr, uint64_t curCycle, INS ins_copy) {
+                         ^
+build/opt/filter_cache.h:114:25: note:   candidate expects 3 arguments, 2 provided
+build/opt/timing_core.cpp: In member function ‘void TimingCore::bblAndRecord(Address, BblInfo*)’:
+build/opt/timing_core.cpp:99:49: error: no matching function for call to ‘FilterCache::load(Address&, uint64_t&)’
+         curCycle = l1i->load(fetchAddr, curCycle);
+                                                 ^
+build/opt/timing_core.cpp:99:49: note: candidate is:
+In file included from build/opt/timing_core.cpp:27:0:
+build/opt/filter_cache.h:102:25: note: uint64_t FilterCache::load(Address, uint64_t, LEVEL_CORE::INS)
+         inline uint64_t load(Address vAddr, uint64_t curCycle, INS ins_copy) {
+                         ^
+build/opt/filter_cache.h:102:25: note:   candidate expects 3 arguments, 2 provided
+scons: *** [build/opt/timing_core.os] Error 1
+scons: *** [build/opt/init.os] Error 1
+scons: building terminated because of errors.
+comparch@comparch-VirtualBox:~/Desktop/casim/zsim$ scons -j4 > run_log.txt
+build/opt/timing_core.cpp: In member function ‘void TimingCore::loadAndRecord(Address)’:
+build/opt/timing_core.cpp:82:40: error: no matching function for call to ‘FilterCache::load(Address&, uint64_t&)’
+     curCycle = l1d->load(addr, curCycle);
+                                        ^
+build/opt/timing_core.cpp:82:40: note: candidate is:
+In file included from build/opt/timing_core.cpp:27:0:
+build/opt/filter_cache.h:102:25: note: uint64_t FilterCache::load(Address, uint64_t, LEVEL_CORE::INS)
+         inline uint64_t load(Address vAddr, uint64_t curCycle, INS ins_copy) {
+                         ^
+build/opt/filter_cache.h:102:25: note:   candidate expects 3 arguments, 2 provided
+build/opt/timing_core.cpp: In member function ‘void TimingCore::storeAndRecord(Address)’:
+build/opt/timing_core.cpp:88:41: error: no matching function for call to ‘FilterCache::store(Address&, uint64_t&)’
+     curCycle = l1d->store(addr, curCycle);
+                                         ^
+build/opt/timing_core.cpp:88:41: note: candidate is:
+In file included from build/opt/timing_core.cpp:27:0:
+build/opt/filter_cache.h:114:25: note: uint64_t FilterCache::store(Address, uint64_t, LEVEL_CORE::INS)
+         inline uint64_t store(Address vAddr, uint64_t curCycle, INS ins_copy) {
+                         ^
+build/opt/filter_cache.h:114:25: note:   candidate expects 3 arguments, 2 provided
+build/opt/timing_core.cpp: In member function ‘void TimingCore::bblAndRecord(Address, BblInfo*)’:
+build/opt/timing_core.cpp:99:49: error: no matching function for call to ‘FilterCache::load(Address&, uint64_t&)’
+         curCycle = l1i->load(fetchAddr, curCycle);
+                                                 ^
+build/opt/timing_core.cpp:99:49: note: candidate is:
+In file included from build/opt/timing_core.cpp:27:0:
+build/opt/filter_cache.h:102:25: note: uint64_t FilterCache::load(Address, uint64_t, LEVEL_CORE::INS)
+         inline uint64_t load(Address vAddr, uint64_t curCycle, INS ins_copy) {
+                         ^
+build/opt/filter_cache.h:102:25: note:   candidate expects 3 arguments, 2 provided
+scons: *** [build/opt/timing_core.os] Error 1
+In file included from build/opt/init.cpp:78:0:
+build/opt/hawkeye_repl.h:18:40: error: invalid use of non-static data member ‘HawkeyeReplPolicy::MAX_PREDICT_ENTRIES’
+   const uint32_t MAX_PREDICT_ENTRIES = 0b1111111111111;
+                                        ^
+build/opt/hawkeye_repl.h:21:21: error: from this location
+   array < uint32_t, MAX_PREDICT_ENTRIES > hawkPredictor;
+                     ^
+build/opt/hawkeye_repl.h:18:40: error: invalid use of non-static data member ‘HawkeyeReplPolicy::MAX_PREDICT_ENTRIES’
+   const uint32_t MAX_PREDICT_ENTRIES = 0b1111111111111;
+                                        ^
+build/opt/hawkeye_repl.h:21:21: error: from this location
+   array < uint32_t, MAX_PREDICT_ENTRIES > hawkPredictor;
+                     ^
+build/opt/hawkeye_repl.h:18:40: error: invalid use of non-static data member ‘HawkeyeReplPolicy::MAX_PREDICT_ENTRIES’
+   const uint32_t MAX_PREDICT_ENTRIES = 0b1111111111111;
+                                        ^
+build/opt/hawkeye_repl.h:21:21: error: from this location
+   array < uint32_t, MAX_PREDICT_ENTRIES > hawkPredictor;
+                     ^
+build/opt/hawkeye_repl.h:21:41: error: template argument 2 is invalid
+   array < uint32_t, MAX_PREDICT_ENTRIES > hawkPredictor;
+                                         ^
+build/opt/hawkeye_repl.h:45:3: error: ‘unit32_t’ does not name a type
+   unit32_t repCheck = 0; // replaced check
+   ^
+build/opt/hawkeye_repl.h:110:28: error: ‘C’ has not been declared
+   inline uint64_t findCand(C cands) {
+                            ^
+build/opt/hawkeye_repl.h: In constructor ‘HawkeyeReplPolicy::HawkeyeReplPolicy(uint32_t)’:
+build/opt/hawkeye_repl.h:49:71: error: expected ‘{’ before ‘:’ token
+   explicit HawkeyeReplPolicy(uint32_t _numLines) :numLines(_numLines) :lineAddr(0) {
+                                                                       ^
+build/opt/hawkeye_repl.h: In member function ‘virtual void HawkeyeReplPolicy::update(uint32_t, const MemReq*)’:
+build/opt/hawkeye_repl.h:65:28: error: expected primary-expression before ‘const’
+    bool OPTGenHit = OPTGen(const MemReq* req);
+                            ^
+build/opt/hawkeye_repl.h:68:33: error: request for member ‘lineAddr’ in ‘req’, which is of pointer type ‘const MemReq*’ (maybe you meant to use ‘->’ ?)
+    accessSequence.push_back(req.lineAddr);
+                                 ^
+build/opt/hawkeye_repl.h:72:25: error: request for member ‘insAddr’ in ‘req’, which is of pointer type ‘const MemReq*’ (maybe you meant to use ‘->’ ?)
+    pcAccessSequence[req.insAddr] = req.lineAddr;
+                         ^
+build/opt/hawkeye_repl.h:72:40: error: request for member ‘lineAddr’ in ‘req’, which is of pointer type ‘const MemReq*’ (maybe you meant to use ‘->’ ?)
+    pcAccessSequence[req.insAddr] = req.lineAddr;
+                                        ^
+build/opt/hawkeye_repl.h:74:31: error: expected primary-expression before ‘const’
+    predVal = hawkeyePredictor(const MemReq* req, OPTGenHit);
+                               ^
+build/opt/hawkeye_repl.h:78:7: error: ‘repCheck’ was not declared in this scope
+    if(repCheck == 0) {
+       ^
+build/opt/hawkeye_repl.h: In member function ‘virtual void HawkeyeReplPolicy::replaced(uint32_t)’:
+build/opt/hawkeye_repl.h:95:4: error: ‘repCheck’ was not declared in this scope
+    repCheck = 1;
+    ^
+build/opt/hawkeye_repl.h: In member function ‘uint32_t HawkeyeReplPolicy::rank(const MemReq*, C)’:
+build/opt/hawkeye_repl.h:102:26: error: expected primary-expression before ‘cands’
+    bestCand = findCand(C cands);
+                          ^
+build/opt/hawkeye_repl.h: In member function ‘uint64_t HawkeyeReplPolicy::findCand(int)’:
+build/opt/hawkeye_repl.h:112:25: error: request for member ‘begin’ in ‘cands’, which is of non-class type ‘int’
+    for (auto ci = cands.begin(); ci != cands.end(); ci.inc()) {
+                         ^
+build/opt/hawkeye_repl.h:112:46: error: request for member ‘end’ in ‘cands’, which is of non-class type ‘int’
+    for (auto ci = cands.begin(); ci != cands.end(); ci.inc()) {
+                                              ^
+build/opt/hawkeye_repl.h:120:36: error: request for member ‘begin’ in ‘cands’, which is of non-class type ‘int’
+    uint64_t max = rripArray[*cands.begin()];
+                                    ^
+build/opt/hawkeye_repl.h:121:25: error: request for member ‘begin’ in ‘cands’, which is of non-class type ‘int’
+    for (auto ci = cands.begin(); ci != cands.end(); ci.end()) {
+                         ^
+build/opt/hawkeye_repl.h:121:46: error: request for member ‘end’ in ‘cands’, which is of non-class type ‘int’
+    for (auto ci = cands.begin(); ci != cands.end(); ci.end()) {
+                                              ^
+build/opt/hawkeye_repl.h: In member function ‘bool HawkeyeReplPolicy::OPTGen(const MemReq*)’:
+build/opt/hawkeye_repl.h:144:37: error: request for member ‘lineAddr’ in ‘req’, which is of pointer type ‘const MemReq*’ (maybe you meant to use ‘->’ ?)
+     if(accessSequence[index] == req.lineAddr) {
+                                     ^
+build/opt/hawkeye_repl.h:145:6: error: ‘last_access’ was not declared in this scope
+      last_access = index;
+      ^
+build/opt/hawkeye_repl.h:154:23: error: ‘last_access’ was not declared in this scope
+     for (uint32_t i = last_access; i < accessSequence.size(); i++) {
+                       ^
+build/opt/hawkeye_repl.h:164:23: error: ‘last_access’ was not declared in this scope
+     for (uint32_t i = last_access; i < accessSequence.size(); i++) {
+                       ^
+build/opt/hawkeye_repl.h: In member function ‘LEVEL_BASE::ADDRINT HawkeyeReplPolicy::lastPCAccessed(const MemReq*)’:
+build/opt/hawkeye_repl.h:177:19: error: ‘pcAccesSequence’ was not declared in this scope
+    for (auto pi = pcAccesSequence.begin(); pi!=pcAccessSequence.end(); pi++){
+                   ^
+build/opt/hawkeye_repl.h:178:27: error: request for member ‘lineAddr’ in ‘req’, which is of pointer type ‘const MemReq*’ (maybe you meant to use ‘->’ ?)
+     if (pi->second == req.lineAddr) {// line addr is the second element
+                           ^
+build/opt/hawkeye_repl.h: In member function ‘bool HawkeyeReplPolicy::hawkeyePredictor(const MemReq*, bool)’:
+build/opt/hawkeye_repl.h:195:21: error: invalid types ‘int[LEVEL_BASE::ADDRINT {aka long unsigned int}]’ for array subscript
+     hawkPredictor[pc]++;
+                     ^
+build/opt/hawkeye_repl.h:198:21: error: invalid types ‘int[LEVEL_BASE::ADDRINT {aka long unsigned int}]’ for array subscript
+     hawkPredictor[pc]--;
+                     ^
+build/opt/hawkeye_repl.h:205:26: error: request for member ‘insAddr’ in ‘req’, which is of pointer type ‘const MemReq*’ (maybe you meant to use ‘->’ ?)
+    if (hawkPredictor[req.insAddr] >> 2 == 1) {
+                          ^
+build/opt/init.cpp: In function ‘BaseCache* BuildCacheBank(Config&, const string&, g_string&, uint32_t, bool, uint32_t)’:
+build/opt/init.cpp:180:50: error: no matching function for call to ‘HawkeyeReplPolicy::HawkeyeReplPolicy(uint32_t&, uint32_t&)’
+         rp = new HawkeyeReplPolicy(numLines, ways);
+                                                  ^
+build/opt/init.cpp:180:50: note: candidates are:
+In file included from build/opt/init.cpp:78:0:
+build/opt/hawkeye_repl.h:49:12: note: HawkeyeReplPolicy::HawkeyeReplPolicy(uint32_t)
+   explicit HawkeyeReplPolicy(uint32_t _numLines) :numLines(_numLines) :lineAddr(0) {
+            ^
+build/opt/hawkeye_repl.h:49:12: note:   candidate expects 1 argument, 2 provided
+build/opt/hawkeye_repl.h:16:7: note: HawkeyeReplPolicy::HawkeyeReplPolicy(const HawkeyeReplPolicy&)
+ class HawkeyeReplPolicy : public ReplPolicy {
+       ^
+build/opt/hawkeye_repl.h:16:7: note:   candidate expects 1 argument, 2 provided
+scons: *** [build/opt/init.os] Error 1
+log
