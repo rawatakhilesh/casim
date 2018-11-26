@@ -107,7 +107,7 @@ class HawkeyeReplPolicy : public ReplPolicy {
 		DECL_RANK_BINDINGS;
 
 	private:
-		template <typename C> uint64_t findCand(C cands) {
+		inline uint64_t findCand(C cands) {
 			/* THE REPLACEMENT POLICY */
 			for (auto ci = cands.begin(); ci != cands.end(); ci.inc()) {
 				if (rripArray[*ci] == 7) {
