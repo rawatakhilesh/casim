@@ -46,7 +46,7 @@ class HawkeyeReplPolicy : public ReplPolicy {
 		/* there is definitely a better way to do it. I am being lazy here.*/
 
 	public:
-		explicit HawkeyeReplPolicy(uint32_t _numLines) :numLines(_numLines) :lineAddr(0) {
+		explicit HawkeyeReplPolicy(uint32_t _numLines) :numLines(_numLines), lineAddr(0) {
 			rripArray = gm_calloc<uint64_t>(numLines);
 
 			/* initialize hawkPredictor array to 0b000 */
@@ -62,7 +62,7 @@ class HawkeyeReplPolicy : public ReplPolicy {
 			are called */
 
 			/* OPTgen should be called on each cache access */
-			bool OPTGenHit = OPTGen(const MemReq* req);
+			bool OPTGenHit = OPTGen(req);
 
 			/* update access sequence */
 			accessSequence.push_back(req->lineAddr);
@@ -71,7 +71,7 @@ class HawkeyeReplPolicy : public ReplPolicy {
 			accessed */
 			pcAccessSequence[req->insAddr] = req->lineAddr;
 
-			predVal = hawkeyePredictor(const MemReq* req, OPTGenHit);
+			predVal = hawkeyePredictor(req, OPTGenHit);
 			/* Hawkeye predictor generates a binary prediction to indicate whether
 			the line is cache-friendly or cache-averse. */
 
