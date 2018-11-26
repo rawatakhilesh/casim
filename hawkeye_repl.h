@@ -15,7 +15,7 @@
 // Fall'18 CSCE 614 Term Project
 class HawkeyeReplPolicy : public ReplPolicy {
 	protected:
-		const uint32_t MAX_PREDICT_ENTRIES = 0b1111111111111;
+		static const uint32_t MAX_PREDICT_ENTRIES = 0b1111111111111;
 		/* The hawkeye predictor hold 8k entries with 3 bit counters
 		for training. */
 		array < uint32_t, MAX_PREDICT_ENTRIES > hawkPredictor;
@@ -65,11 +65,11 @@ class HawkeyeReplPolicy : public ReplPolicy {
 			bool OPTGenHit = OPTGen(const MemReq* req);
 
 			/* update access sequence */
-			accessSequence.push_back(req.lineAddr);
+			accessSequence.push_back(req->lineAddr);
 
 			/* update pc access sequence with current pc and the line address
 			accessed */
-			pcAccessSequence[req.insAddr] = req.lineAddr;
+			pcAccessSequence[req->insAddr] = req->lineAddr;
 
 			predVal = hawkeyePredictor(const MemReq* req, OPTGenHit);
 			/* Hawkeye predictor generates a binary prediction to indicate whether
@@ -141,7 +141,7 @@ class HawkeyeReplPolicy : public ReplPolicy {
 
 			/* lookup last access to this mem */
 			for (uint32_t index = 0; index < accessSequence.size(); index ++) {
-				if(accessSequence[index] == req.lineAddr) {
+				if(accessSequence[index] == req->lineAddr) {
 					last_access = index;
 					found = 1;
 					break;
@@ -175,7 +175,7 @@ class HawkeyeReplPolicy : public ReplPolicy {
 			/* should only be called when there is a cache hit else hell may break loose.
 			Looks up the last pc that accessed this line addr and return it */
 			for (auto pi = pcAccesSequence.begin(); pi!=pcAccessSequence.end(); pi++){
-				if (pi->second == req.lineAddr) {// line addr is the second element
+				if (pi->second == req->lineAddr) {// line addr is the second element
 					return pi->first;
 					// if match, return the pc i.e. the first element
 				}
@@ -202,7 +202,7 @@ class HawkeyeReplPolicy : public ReplPolicy {
 			Cache-friendly = 1
 			Cache-averse = 0
 			*/
-			if (hawkPredictor[req.insAddr] >> 2 == 1) {
+			if (hawkPredictor[req->insAddr] >> 2 == 1) {
 				// indexed by the current load pc
 				// Higher order bit for the 3 bit counter
 				return true; //Cache-friendly
