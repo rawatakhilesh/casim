@@ -99,7 +99,7 @@ class FilterCache : public Cache {
             parentStat->append(cacheStat);
         }
 
-        inline uint64_t load(Address vAddr, uint64_t curCycle) {
+        inline uint64_t load(Address vAddr, uint64_t curCycle, INS ins_copy) {
             Address vLineAddr = vAddr >> lineBits;
             uint32_t idx = vLineAddr & setMask;
             uint64_t availCycle = filterArray[idx].availCycle; //read before, careful with ordering to avoid timing races
@@ -107,11 +107,11 @@ class FilterCache : public Cache {
                 fGETSHit++;
                 return MAX(curCycle, availCycle);
             } else {
-                return replace(vLineAddr, idx, true, curCycle);
+                return replace(vLineAddr, idx, true, curCycle, ins_copy);
             }
         }
 
-        inline uint64_t store(Address vAddr, uint64_t curCycle) {
+        inline uint64_t store(Address vAddr, uint64_t curCycle, INS ins_copy) {
             Address vLineAddr = vAddr >> lineBits;
             uint32_t idx = vLineAddr & setMask;
             uint64_t availCycle = filterArray[idx].availCycle; //read before, careful with ordering to avoid timing races
@@ -121,15 +121,15 @@ class FilterCache : public Cache {
                 //filterArray[idx].availCycle = curCycle; //do optimistic store-load forwarding
                 return MAX(curCycle, availCycle);
             } else {
-                return replace(vLineAddr, idx, false, curCycle);
+                return replace(vLineAddr, idx, false, curCycle, ins_copy);
             }
         }
 
-        uint64_t replace(Address vLineAddr, uint32_t idx, bool isLoad, uint64_t curCycle) {
+        uint64_t replace(Address vLineAddr, uint32_t idx, bool isLoad, uint64_t curCycle, INS ins_copy) {
             Address pLineAddr = procMask | vLineAddr;
             //===
             // instruction of current address
-            ADDRINT insAddr = INS_Address(ins);
+            ADDRINT insAddr = INS_Address(ins_copy);
             //===
             MESIState dummyState = MESIState::I;
             futex_lock(&filterLock);

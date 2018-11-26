@@ -33,6 +33,10 @@
 #include "galloc.h"
 #include "locks.h"
 
+//===
+#include "pin.H"
+//===
+
 /** TYPES **/
 
 /* Addresses are plain 64-bit uints. This should be kept compatible with PIN addrints */
