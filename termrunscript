@@ -1,0 +1,27 @@
+#!/bin/sh
+
+if [ "$#" -ne 3 ]; then
+    echo ""
+    echo "Usage: ./hw4runscript <suite> <benchmark> <repl_policy>"
+    echo "    (suite) benchmarks: "
+    echo "      -- (SPEC) bzip2 gcc mcf hmmer sjeng libquantum xalan milc cactusADM leslie3d namd soplex calculix lbm"
+    echo "      -- (PARSEC) blackscholes bodytrack canneal dedup fluidanimate freqmine streamcluster swaptions x264"
+    echo "    repl_policy: LRU LFU SRRIP Hawkeye"
+else
+    suite=$1
+    bench=$2
+    repl=$3
+
+    # your simulation results will be saved to outputs/hw4/$repl/$bench/
+    if [ "$suite" = "SPEC" ]; then
+        mkdir -p outputs/term/$repl/${bench}
+        echo "./build/opt/zsim configs/term/$repl/${bench}.cfg > outputs/term/$repl/${bench}/${bench}.log 2>&1 &"
+        ./build/opt/zsim configs/term/$repl/${bench}.cfg > outputs/term/$repl/${bench}/${bench}.log 2>&1 &
+    elif [ "$suite" = "PARSEC" ]; then
+        mkdir -p outputs/term/$repl/${bench}_8c_simlarge
+        echo "./build/opt/zsim configs/term/$repl/${bench}_8c_simlarge.cfg > outputs/term/$repl/${bench}_8c_simlarge/${bench}.log 2>&1 &"
+        ./build/opt/zsim configs/term/$repl/${bench}_8c_simlarge.cfg > outputs/term/$repl/${bench}_8c_simlarge/${bench}.log 2>&1 &
+    else
+        echo "No such benchmark suite, please specify SPEC or PARSEC"
+    fi
+fi
