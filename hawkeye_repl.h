@@ -60,6 +60,9 @@ class HawkeyeReplPolicy : public ReplPolicy {
 		/* there is definitely a better way to do it. I am being lazy here.*/
 	
 		const unsigned int numOffsetBits;
+		const unsigned int numIndexBits;
+		const unsigned int totalLineBits;
+		/* line address is not a real address */
 
 	public:
 		explicit HawkeyeReplPolicy(uint32_t _numLines, uint32_t lineSize, uint32_t _cacheAssoc) :numLines(_numLines), 
