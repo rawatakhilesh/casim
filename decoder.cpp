@@ -52,7 +52,9 @@ extern "C" {
 #define PORT_5 (0x20)
 
 #define PORTS_015 (PORT_0 | PORT_1 | PORT_5)
-
+//===
+INS Decoder::ins_copy;
+//===
 void DynUop::clear() {
     memset(this, 0, sizeof(DynUop));  // NOTE: This may break if DynUop becomes non-POD
 }

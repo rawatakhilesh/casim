@@ -128,6 +128,7 @@ class Decoder {
         //====
         static INS ins_copy;
         //====
+
         //If oooDecoding is true, produces a DynBbl with DynUops that can be used in OOO cores
         static BblInfo* decodeBbl(BBL bbl, bool oooDecoding);
 
