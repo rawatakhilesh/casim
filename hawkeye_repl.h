@@ -10,14 +10,17 @@
 
 #include "repl_policies.h"
 
-const uint16_t MAX_PREDICT_ENTRIES = 0b1111111111111;
+const uint32_t pcHashbits = 13; //13 bits hashed PC
+const uint16_t MAX_PREDICT_ENTRIES = pow(2, pcHashbits);
 //const uint32_t MAX_WAYS = 16;
+
+
 
 // Hawkeye by Jain et al. 2016
 // Fall'18 CSCE 614 Term Project
 class HawkeyeReplPolicy : public ReplPolicy {
 	protected:
-		
+
 		/* The hawkeye predictor hold 8k entries with 3 bit counters
 		for training. */
 		array < uint32_t, MAX_PREDICT_ENTRIES > hawkPredictor;
@@ -33,18 +36,18 @@ class HawkeyeReplPolicy : public ReplPolicy {
 		bool predVal; // predval used by the hawkeye predictor
 		bool currentAccess;
 		uint8_t cacheAssoc;
-		
+
 		/*
 		uint32_t cacheAssoc = MAX_WAYS; // cache associativity
 		in case gcc complains about cacheAssoc not being available during compile
 		we will use use MAX_WAYS defined here and not from configs file.
 		*/
-		
+
 		/* TODO: Use a struct for these  */
-		/* 8*cache associativity here is 128 */	
-		array < Address, 8*cacheAssoc > accessSequence;
-		array < uint32_t, 8*cacheAssoc > occupancyVector;
-		uint16_t size = 0;	
+		/* 8*cache associativity here is 128 */
+		vector < Address > accessSequence;
+		vector < uint32_t> occupancyVector;
+		uint32_t size = 8*cacheAssoc;
 
 		/* to be used by the OPTGen to keep track of access sequence */
 
@@ -52,8 +55,7 @@ class HawkeyeReplPolicy : public ReplPolicy {
 		each cache set such that the maximum capacity of any occupancyVector entry
 		never exceeds the cache associativity.*/
 
-		const uint32_t hashedPC = 1 << 12; //13 bits hashed PC
-		/* may be want to chage value later? */
+		hash < Address > hashAddr;
 
 		uint8_t repCheck = 0; // replaced check
 		/* there is definitely a better way to do it. I am being lazy here.*/
@@ -65,7 +67,7 @@ class HawkeyeReplPolicy : public ReplPolicy {
 			/* initialize hawkPredictor array to 0b000 */
 			hawkPredictor.fill(0b000);
 			/* initialize cacheAssoc a.k.a MAX_WAYS */
-			cacheAssoc = _cacheAssoc;		
+			cacheAssoc = _cacheAssoc;
 		}
 
 		~HawkeyeReplPolicy() {
@@ -79,10 +81,8 @@ class HawkeyeReplPolicy : public ReplPolicy {
 			/* OPTgen should be called on each cache access */
 			bool OPTGenHit = OPTGen(req);
 
-			/* update access sequence */
-			accessSequence[size] = req->lineAddr;
-			/* update the size of the occupancy vector and the access sequence array*/			
-			size++;
+			updateOVector(req);
+
 			/* update pc access sequence with current pc and the line address
 			accessed */
 			pcAccessSequence[req->insAddr] = req->lineAddr;
@@ -145,6 +145,19 @@ class HawkeyeReplPolicy : public ReplPolicy {
 			return max;
 		}
 
+		void updateOVector(const MemReq* req) {
+			/* update occupancyVector */
+			if (occupancyVector.size() == size) {
+				/* if limit reached */
+				occupancyVector.erase(occupancyVector.begin());
+				accessSequence.erase(accessSequence.begin());
+			}
+			/* update occupancyVector */
+			occupancyVector.push_back(0);
+			/* update access sequence */
+			accessSequence.push_back(req->lineAddr);
+		}
+
 		bool OPTGen(const MemReq* req) {
 			bool roofHit = true;
 			uint32_t found = -1;
@@ -153,8 +166,8 @@ class HawkeyeReplPolicy : public ReplPolicy {
 			bool OPTGenHit = false;
 
 			/* set the most recent entry of the occupancyVector to zero */
-			occupancyVector[size] = 0;
-		
+			/* upadted with accessSequence*/
+
 
 			/* lookup last access to this mem */
 			for (uint32_t index = 0; index < size; index ++) {
@@ -206,15 +219,17 @@ class HawkeyeReplPolicy : public ReplPolicy {
 			// req.lineaddr might be useful
 			// TODO: implementation ; /*value of opt gen at that PC*
 
-			/* find the pc from pcAccesSequence array which accessed X last */
-			ADDRINT pc = lastPCAccessed(req);
+			/* find the pc from pcAccesSequence array which accessed X last
+			and hash it */
 
+			Address hashedPc = (Address) ((unsigned long) hashAddr(lastPCAccessed(req))
+											% (unsigned long) pow(2, pcHashbits));
 			if (_OPTGenHit) {
 				/* if OPTgen say hit, pc that LAST accessed X is trained positively*/
-				hawkPredictor[pc]++;
+				hawkPredictor[hashedPc]++;
 			} else {
 				/* train negatively */
-				hawkPredictor[pc]--;
+				hawkPredictor[hashedPc]--;
 			}
 
 			/*
