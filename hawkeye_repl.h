@@ -67,7 +67,7 @@ class HawkeyeReplPolicy : public ReplPolicy {
 			/* initialize hawkPredictor array to 0b000 */
 			hawkPredictor.fill(0b000);
 			/* initialize cacheAssoc a.k.a MAX_WAYS */
-			cacheAssoc = _cacheAssoc;
+			//cacheAssoc = _cacheAssoc;
 		}
 
 		~HawkeyeReplPolicy() {
@@ -182,7 +182,11 @@ class HawkeyeReplPolicy : public ReplPolicy {
 			than the cache capacity */
 			if (found > 0) {
 				for (uint32_t i = last_access; i < size; i++) {
-					if (occupancyVector[i] == cacheAssoc) {roofHit = true;}
+					if (occupancyVector[i] == cacheAssoc) {
+						roofHit = true;
+					} else {
+						roofHit = false;
+					}
 				}
 			}
 
