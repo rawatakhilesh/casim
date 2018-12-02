@@ -32,7 +32,6 @@ class HawkeyeReplPolicy : public ReplPolicy {
 
 		uint64_t* rripArray;
 		uint32_t numLines; // number of cache lines
-		uint64_t lineAddr; // address of the line
 		bool predVal; // predval used by the hawkeye predictor
 		bool currentAccess;
 		uint8_t cacheAssoc;
@@ -59,15 +58,20 @@ class HawkeyeReplPolicy : public ReplPolicy {
 
 		uint8_t repCheck = 0; // replaced check
 		/* there is definitely a better way to do it. I am being lazy here.*/
+	
+		const unsigned int numOffsetBits;
 
 	public:
-		explicit HawkeyeReplPolicy(uint32_t _numLines, uint32_t _cacheAssoc) :numLines(_numLines), lineAddr(0), cacheAssoc(_cacheAssoc) {
+		explicit HawkeyeReplPolicy(uint32_t _numLines, uint32_t lineSize, uint32_t _cacheAssoc) :numLines(_numLines), 
+			cacheAssoc(_cacheAssoc),
+			numOffsetBits(ceil(log2(lineSize/8))),
+			numIndexBits(ceil(log2(numLines))), 
+			totalLineBits(numOffsetBits+numIndexBits) {
+
 			rripArray = gm_calloc<uint64_t>(numLines);
 
 			/* initialize hawkPredictor array to 0b000 */
 			hawkPredictor.fill(0b000);
-			/* initialize cacheAssoc a.k.a MAX_WAYS */
-			//cacheAssoc = _cacheAssoc;
 		}
 
 		~HawkeyeReplPolicy() {
@@ -85,8 +89,8 @@ class HawkeyeReplPolicy : public ReplPolicy {
 
 			/* update pc access sequence with current pc and the line address
 			accessed */
-			pcAccessSequence[req->insAddr] = req->lineAddr;
-
+			pcAccessSequence[req->insAddr] = req->lineAddr >> totalLineBits;
+			/* for info on why we are doing this refer to https://github.com/s5z/zsim/issues/130 */
 			predVal = hawkeyePredictor(req, OPTGenHit);
 			/* Hawkeye predictor generates a binary prediction to indicate whether
 			the line is cache-friendly or cache-averse. */
@@ -155,7 +159,7 @@ class HawkeyeReplPolicy : public ReplPolicy {
 			/* update occupancyVector */
 			occupancyVector.push_back(0);
 			/* update access sequence */
-			accessSequence.push_back(req->lineAddr);
+			accessSequence.push_back(req->lineAddr >> totalLineBits);
 		}
 
 		bool OPTGen(const MemReq* req) {
@@ -168,10 +172,9 @@ class HawkeyeReplPolicy : public ReplPolicy {
 			/* set the most recent entry of the occupancyVector to zero */
 			/* upadted with accessSequence*/
 
-
 			/* lookup last access to this mem */
 			for (uint32_t index = 0; index < size; index ++) {
-				if(accessSequence[index] == req->lineAddr) {
+				if(accessSequence[index] == req->lineAddr >> totalLineBits) {
 					last_access = index;
 					found = 1;
 					break;
@@ -209,7 +212,7 @@ class HawkeyeReplPolicy : public ReplPolicy {
 			/* should only be called when there is a cache hit else hell may break loose.
 			Looks up the last pc that accessed this line addr and return it */
 			for (auto pi = pcAccessSequence.begin(); pi!=pcAccessSequence.end(); pi++){
-				if (pi->second == req->lineAddr) {// line addr is the second element
+				if (pi->second == req->lineAddr >> totalLineBits) {// line addr is the second element
 					return pi->first;
 					// if match, return the pc i.e. the first element
 				}
