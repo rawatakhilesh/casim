@@ -75,6 +75,8 @@ class HawkeyeReplPolicy : public ReplPolicy {
 
 			/* initialize hawkPredictor array to 0b000 */
 			hawkPredictor.fill(0b000);
+			accessSequence.resize(8*cacheAssoc, 0);
+			occupancyVector.resize(8*cacheAssoc, 0);
 		}
 
 		~HawkeyeReplPolicy() {
