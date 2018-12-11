@@ -149,7 +149,7 @@ class HawkeyeReplPolicy : public ReplPolicy {
 			/* detrain its load instruction if the evicted line is present in the
 			sampler*/
 			// TODO: implement the above line
-
+			std::cout<<"max val"<<max<<std::endl;
 			return max;
 		}
 

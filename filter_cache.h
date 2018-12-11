@@ -100,7 +100,12 @@ class FilterCache : public Cache {
         }
 
         inline uint64_t load(Address vAddr, uint64_t curCycle, INS ins_copy) {
-            Address vLineAddr = vAddr >> lineBits;
+			
+			//std::cout<<"vAddr:"<<vAddr<<endl;
+           Address vLineAddr = vAddr >> lineBits;
+			//std::cout<<"lineBits:"<<lineBits<<endl;
+            //std::cout<<"vLineAddr:"<<vLineAddr<<endl;
+			
             uint32_t idx = vLineAddr & setMask;
             uint64_t availCycle = filterArray[idx].availCycle; //read before, careful with ordering to avoid timing races
             if (vLineAddr == filterArray[idx].rdAddr) {
@@ -127,10 +132,14 @@ class FilterCache : public Cache {
 
         uint64_t replace(Address vLineAddr, uint32_t idx, bool isLoad, uint64_t curCycle, INS ins_copy) {
             Address pLineAddr = procMask | vLineAddr;
+			//std::cout<<"pLineAddr:"<<pLineAddr<<endl;
+			//std::cout<<"procMask:"<<procMask<<endl;
+                        
             //===
             // instruction of current address
-            ADDRINT insAddr = INS_Address(ins_copy);
-            //===
+            Address insAddr = INS_Address(ins_copy);
+			//std::cout<<"Ins address:"<<insAddr<<endl;            
+			//===
             MESIState dummyState = MESIState::I;
             futex_lock(&filterLock);
             MemReq req = {pLineAddr, isLoad? GETS : GETX, 0, &dummyState, curCycle, &filterLock, dummyState, srcId, insAddr, reqFlags};
