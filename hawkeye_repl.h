@@ -30,7 +30,8 @@ class HawkeyeReplPolicy : public ReplPolicy {
 		pc -> lineAddr */
 		map < ADDRINT, Address >::iterator pi;
 
-		uint64_t* rripArray;
+		//uint64_t* rripArray;
+		uint32_t* rripArray;
 		uint32_t numLines; // number of cache lines
 		bool predVal; // predval used by the hawkeye predictor
 		bool currentAccess;
@@ -71,7 +72,7 @@ class HawkeyeReplPolicy : public ReplPolicy {
 			numIndexBits(ceil(log2(numLines))), 
 			totalLineBits(numOffsetBits+numIndexBits) {
 
-			rripArray = gm_calloc<uint64_t>(numLines);
+			rripArray = gm_calloc<uint32_t>(numLines);
 
 			/* initialize hawkPredictor array to 0b000 */
 			hawkPredictor.fill(0b000);
@@ -101,9 +102,11 @@ class HawkeyeReplPolicy : public ReplPolicy {
 
 			if(repCheck == 0) {
 				// this is a cache hit
+				std::cout<<"cache hit"<<std::endl;
 				currentAccess = 1;
 			} else {
 				// there was a cache miss and replacement called
+				std::cout<<"cache miss"<<std::endl;
 				currentAccess = 0; // cache miss
 				repCheck = 0;
 			}
@@ -122,37 +125,23 @@ class HawkeyeReplPolicy : public ReplPolicy {
 		template <typename C> uint32_t rank(const MemReq* req, C cands) {
 			/* function called by cache for best candidate to be replaced */
 
-			uint32_t bestCand = -1;
-			bestCand = findCand(cands);
 			/* best candidate for replacement found */
-			return bestCand;
+			while(true) {
+		              for (auto ci = cands.begin(); ci != cands.end(); ci.inc()) {
+		                  if(rripArray[*ci] == 7) {
+		                    return *ci;
+		                  }
+		              }
+
+		              for(auto ci = cands.begin(); ci != cands.end(); ci.inc()) {
+		                  rripArray[*ci]++;
+		              }
+		        }
 		}
 
 		DECL_RANK_BINDINGS;
 
 	private:
-		template <typename C> uint64_t findCand(C cands) {
-			/* THE REPLACEMENT POLICY */
-			for (auto ci = cands.begin(); ci != cands.end(); ci.inc()) {
-				if (rripArray[*ci] == 7) {
-					/* found the best candidate */
-					return *ci;
-				}
-			}
-			/* if could not find the best candidate, find one with highest rrip
-			value i.e oldest cache-friendly line */
-			uint64_t max = rripArray[*cands.begin()];
-			for (auto ci = cands.begin(); ci != cands.end(); ci.inc()) {
-				max = (rripArray[*ci] > max)? rripArray[*ci]:max;
-			}
-
-			/* detrain its load instruction if the evicted line is present in the
-			sampler*/
-			// TODO: implement the above line
-			std::cout<<"max val"<<max<<std::endl;
-			return max;
-		}
-
 		void updateOVector(const MemReq* req) {
 			/* update occupancyVector */
 			if (occupancyVector.size() == size) {
